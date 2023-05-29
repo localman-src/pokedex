@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/localman-src/internal/pokeapi"
 )
 
 type cliCommand struct {
