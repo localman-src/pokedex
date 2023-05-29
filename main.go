@@ -38,12 +38,16 @@ func commandExit() error {
 }
 
 func commandMap() error {
-	areas, err := pokeapi.GetAreas()
+	resp, err := pokeapi.GetAreas()
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 	} else {
-		fmt.Println(areas)
+		resp.PrintAreas()
 	}
+	return nil
+}
+
+func commandMapB() error {
 	return nil
 }
 

@@ -26,7 +26,12 @@ type locationAreaResponse struct {
 	Results  []map[string]string `json:"results"`
 }
 
-func GetAreas() (locationAreaResponse, error) {
+func (l locationAreaResponse) PrintAreas() {
+	for _, location := range l.Results {
+		println(location["name"])
+	}
+}
+func GetAreas() (*locationAreaResponse, error) {
 	resp, err := http.Get("https://pokeapi.co/api/v2/location-area")
 	if err != nil {
 		return nil, fmt.Errorf("error fetching areas: %v", err)
@@ -37,12 +42,12 @@ func GetAreas() (locationAreaResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error reading response body: %v", err)
 	}
-	locations := locationAreaResponse{}
+	locationResponse := locationAreaResponse{}
 
-	err = json.Unmarshal(body, &locations)
+	err = json.Unmarshal(body, &locationResponse)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshaling JSML: %v", err)
 	}
 
-	return locations, nil
+	return &locationResponse, nil
 }
