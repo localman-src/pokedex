@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/localman-src/internal/pokeapi"
+	"github.com/localman-src/pokedexcli/internal/pokeapi"
 )
 
 type cliCommand struct {
@@ -38,7 +38,12 @@ func commandExit() error {
 }
 
 func commandMap() error {
-	pokeapi.GetAreas()
+	areas, err := pokeapi.GetAreas()
+	if err != nil {
+		fmt.Printf("error: %s\n", err)
+	} else {
+		fmt.Println(areas)
+	}
 	return nil
 }
 
