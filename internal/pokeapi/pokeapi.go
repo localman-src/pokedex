@@ -1,0 +1,5 @@
+package pokeapi
+
+func GetAreas() {
+
+}
