@@ -44,4 +44,75 @@ type MoveFlavorText struct {
 }
 
 type MoveMetaData struct {
+	Ailment       NamedAPIResource `json:"ailment"`
+	Category      NamedAPIResource `json:"category"`
+	MinHits       int              `json:"min_hits"`
+	MaxHits       int              `json:"max_hits"`
+	MinTurns      int              `json:"min_turns"`
+	MaxTurns      int              `json:"max_turns"`
+	Drain         int              `json:"drain"`
+	Healing       int              `json:"healing"`
+	CritRate      int              `json:"crit_rate"`
+	AilmentChance int              `json:"ailment_chance"`
+	FlinchChance  int              `json:"flinch_chance"`
+	StatChance    int              `json:"stat_chance"`
+}
+
+type MoveStatChange struct {
+	Change int              `json:"change"`
+	Stat   NamedAPIResource `json:"stat"`
+}
+
+type PastMoveStatValues struct {
+	Accuracy      int              `json:"accuracy"`
+	EffectChance  int              `json:"effect_chance"`
+	Power         int              `json:"power"`
+	PP            int              `json:"pp"`
+	EffectEntries []VerboseEffect  `json:"effect_entries"`
+	Type          NamedAPIResource `json:"type"`
+	VersionGroup  NamedAPIResource `json:"version_group"`
+}
+
+type MoveAilment struct {
+	ID    int              `json:"id"`
+	Name  string           `json:"name"`
+	Moves NamedAPIResource `json:"moves"`
+	Names []Name           `json:"names"`
+}
+
+type MoveBattleStyle struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Names []Name `json:"names"`
+}
+
+type MoveCategory struct {
+	ID           int                `json:"id"`
+	Name         string             `json:"name"`
+	Moves        []NamedAPIResource `json:"moves"`
+	Descriptions []Description      `json:"descriptions"`
+}
+
+type MoveDamageClass struct {
+	ID           int                `json:"id"`
+	Name         string             `json:"name"`
+	Descriptions []Description      `json:"descriptions"`
+	Moves        []NamedAPIResource `json:"moves"`
+	Names        []Name             `json:"names"`
+}
+
+type MoveLearnMethod struct {
+	ID            int                `json:"id"`
+	Name          string             `json:"name"`
+	Descriptions  []Description      `json:"descriptions"`
+	Names         []Name             `json:"names"`
+	VersionGroups []NamedAPIResource `json:"version_groups"`
+}
+
+type MoveTarget struct {
+	ID           int                `json:"id"`
+	Name         string             `json:"name"`
+	Descriptions []Description      `json:"descriptions"`
+	Moves        []NamedAPIResource `json:"moves"`
+	Names        []Name             `json:"names"`
 }
