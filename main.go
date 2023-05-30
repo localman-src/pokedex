@@ -48,7 +48,7 @@ func commandMap(cfg *config) error {
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 	} else {
-		resp.PrintAreas()
+		pokeapi.PrintResourceList(*resp)
 		cfg.NextMap = resp.Next
 		cfg.PrevMap = resp.Previous
 	}
@@ -62,7 +62,7 @@ func commandMapB(cfg *config) error {
 		if err != nil {
 			fmt.Printf("error: %s\n", err)
 		} else {
-			resp.PrintAreas()
+			pokeapi.PrintResourceList(*resp)
 			cfg.NextMap = resp.Next
 			cfg.PrevMap = resp.Previous
 		}

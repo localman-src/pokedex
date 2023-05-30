@@ -9,19 +9,12 @@ import (
 	"github.com/localman-src/pokedex/internal/structs"
 )
 
-type locationAreaResponse struct {
-	Count    int                        `json:"count"`
-	Next     string                     `json:"next"`
-	Previous string                     `json:"previous"`
-	Results  []structs.NamedAPIResource `json:"results"`
-}
-
-func (l locationAreaResponse) PrintAreas() {
-	for _, location := range l.Results {
+func PrintResourceList(resourceList structs.NamedAPIResourceList) {
+	for _, location := range resourceList.Results {
 		println(location.Name)
 	}
 }
-func GetAreas(url string) (*locationAreaResponse, error) {
+func GetAreas(url string) (*structs.NamedAPIResourceList, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching areas: %v", err)
@@ -32,7 +25,7 @@ func GetAreas(url string) (*locationAreaResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error reading response body: %v", err)
 	}
-	locationResponse := locationAreaResponse{}
+	locationResponse := structs.NamedAPIResourceList{}
 
 	err = json.Unmarshal(body, &locationResponse)
 	if err != nil {

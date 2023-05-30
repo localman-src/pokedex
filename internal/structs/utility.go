@@ -56,6 +56,13 @@ type NamedAPIResource struct {
 	URL  string `json:"url"`
 }
 
+type NamedAPIResourceList struct {
+	Count    int                `json:"count"`
+	Next     string             `json:"next"`
+	Previous string             `json:"previous"`
+	Results  []NamedAPIResource `json:"results"`
+}
+
 type VerboseEffect struct {
 	Effect      string           `json:"effect"`
 	ShortEffect string           `json:"short_effect"`
