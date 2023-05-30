@@ -5,36 +5,20 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/localman-src/pokedex/internal/structs"
 )
 
-type locationArea struct {
-	ID                   int    `json:"id"`
-	Name                 string `json:"name"`
-	GameIndex            int    `json:"game_index"`
-	EncounterMethodRates []struct {
-		EncounterMethod map[string]string `json:"encounter_method"`
-		VersionDetails  []struct {
-			Rate    int                 `json:"rate"`
-			Version []map[string]string `json:"version"`
-		} `json:"version_details"`
-	} `json:"encounter_method_rates"`
-	Location          map[string]string `json:"location"`
-	Names             interface{}       `json:"names"`
-	PokemonEncounters interface{}       `json:"pokemon_encounters"`
-}
-
-type locationAreas []locationArea
-
 type locationAreaResponse struct {
-	Count    int                 `json:"count"`
-	Next     string              `json:"next"`
-	Previous string              `json:"previous"`
-	Results  []map[string]string `json:"results"`
+	Count    int                        `json:"count"`
+	Next     string                     `json:"next"`
+	Previous string                     `json:"previous"`
+	Results  []structs.NamedAPIResource `json:"results"`
 }
 
 func (l locationAreaResponse) PrintAreas() {
 	for _, location := range l.Results {
-		println(location["name"])
+		println(location.Name)
 	}
 }
 func GetAreas(url string) (*locationAreaResponse, error) {
