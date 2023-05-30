@@ -8,13 +8,19 @@ import (
 )
 
 type locationArea struct {
-	ID                   int               `json:"id"`
-	Name                 string            `json:"name"`
-	GameIndex            int               `json:"game_index"`
-	EncounterMethodRates interface{}       `json:"encounter_method_rates"`
-	Location             map[string]string `json:"location"`
-	Names                interface{}       `json:"names"`
-	PokemonEncounters    interface{}       `json:"pokemon_encounters"`
+	ID                   int    `json:"id"`
+	Name                 string `json:"name"`
+	GameIndex            int    `json:"game_index"`
+	EncounterMethodRates []struct {
+		EncounterMethod map[string]string `json:"encounter_method"`
+		VersionDetails  []struct {
+			Rate    int                 `json:"rate"`
+			Version []map[string]string `json:"version"`
+		} `json:"version_details"`
+	} `json:"encounter_method_rates"`
+	Location          map[string]string `json:"location"`
+	Names             interface{}       `json:"names"`
+	PokemonEncounters interface{}       `json:"pokemon_encounters"`
 }
 
 type locationAreas []locationArea
@@ -31,8 +37,8 @@ func (l locationAreaResponse) PrintAreas() {
 		println(location["name"])
 	}
 }
-func GetAreas() (*locationAreaResponse, error) {
-	resp, err := http.Get("https://pokeapi.co/api/v2/location-area")
+func GetAreas(url string) (*locationAreaResponse, error) {
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching areas: %v", err)
 	}
