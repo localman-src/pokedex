@@ -1,37 +1,37 @@
 package structs
 
 type Location struct {
-	ID          string                `json:"id"`
-	Name        string                `json:"name"`
-	Region      NamedAPIResource      `json:"region"`
-	Names       []Name                `json:"names"`
-	GameIndices []GenerationGameIndex `json:"game_indices"`
-	Areas       []NamedAPIResource    `json:"areas"`
+	ID          string                           `json:"id"`
+	Name        string                           `json:"name"`
+	Region      NamedAPIResource[Region]         `json:"region"`
+	Names       []Name                           `json:"names"`
+	GameIndices []GenerationGameIndex            `json:"game_indices"`
+	Areas       []NamedAPIResource[LocationArea] `json:"areas"`
 }
 
 type LocationArea struct {
-	ID                   int                   `json:"ID"`
-	Name                 string                `json:"name"`
-	GameIndex            int                   `json:"game_index"`
-	EncounterMethodRates []EncounterMethodRate `json:"encounter_method_rates"`
-	Location             NamedAPIResource      `json:"location"`
-	Names                []Name                `json:"names"`
-	PokemonEncounters    []PokemonEncounter    `json:"pokemon_encounters"`
+	ID                   int                        `json:"ID"`
+	Name                 string                     `json:"name"`
+	GameIndex            int                        `json:"game_index"`
+	EncounterMethodRates []EncounterMethodRate      `json:"encounter_method_rates"`
+	Location             NamedAPIResource[Location] `json:"location"`
+	Names                []Name                     `json:"names"`
+	PokemonEncounters    []PokemonEncounter         `json:"pokemon_encounters"`
 }
 
 type EncounterMethodRate struct {
-	EncounterMethod NamedAPIResource          `json:"encounter_method"`
-	VersionDetails  []EncounterVersionDetails `json:"version_details"`
+	EncounterMethod NamedAPIResource[EncounterMethod] `json:"encounter_method"`
+	VersionDetails  []EncounterVersionDetails         `json:"version_details"`
 }
 
 type EncounterVersionDetails struct {
-	Rate    int              `json:"rate"`
-	Version NamedAPIResource `json:"version"`
+	Rate    int                       `json:"rate"`
+	Version NamedAPIResource[Version] `json:"version"`
 }
 
 type PokemonEncounter struct {
-	Name           NamedAPIResource         `json:"name"`
-	VersionDetails []VersionEncounterDetail `json:"version_details"`
+	Name           NamedAPIResource[Pokemon] `json:"name"`
+	VersionDetails []VersionEncounterDetail  `json:"version_details"`
 }
 
 type PalParkArea struct {
@@ -42,17 +42,17 @@ type PalParkArea struct {
 }
 
 type PalParkEncounterSpecies struct {
-	BaseScore      int              `json:"id"`
-	Rate           int              `json:"rate"`
-	PokemonSpecies NamedAPIResource `json:"pokemon_species"`
+	BaseScore      int                              `json:"id"`
+	Rate           int                              `json:"rate"`
+	PokemonSpecies NamedAPIResource[PokemonSpecies] `json:"pokemon_species"`
 }
 
 type Region struct {
-	ID             int                `json:"id"`
-	Locations      []NamedAPIResource `json:"locations"`
-	Name           string             `json:"name"`
-	Names          []Name             `json:"names"`
-	MainGeneration []NamedAPIResource `json:"main_generation"`
-	Pokedexes      []NamedAPIResource `json:"pokedexes"`
-	VersionGroups  []NamedAPIResource `json:"version_groups"`
+	ID             int                              `json:"id"`
+	Locations      []NamedAPIResource[Location]     `json:"locations"`
+	Name           string                           `json:"name"`
+	Names          []Name                           `json:"names"`
+	MainGeneration []NamedAPIResource[Generation]   `json:"main_generation"`
+	Pokedexes      []NamedAPIResource[Pokedex]      `json:"pokedexes"`
+	VersionGroups  []NamedAPIResource[VersionGroup] `json:"version_groups"`
 }

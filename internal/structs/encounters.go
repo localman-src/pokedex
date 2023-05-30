@@ -8,15 +8,15 @@ type EncounterMethod struct {
 }
 
 type EncounterCondition struct {
-	ID     int                `json:"id"`
-	Name   string             `json:"name"`
-	Names  []Name             `json:"names"`
-	Values []NamedAPIResource `json:"values"`
+	ID     int                                         `json:"id"`
+	Name   string                                      `json:"name"`
+	Names  []Name                                      `json:"names"`
+	Values []NamedAPIResource[EncounterConditionValue] `json:"values"`
 }
 
 type EncounterConditionValue struct {
-	ID        int              `json:"id"`
-	Name      string           `json:"name"`
-	Condition NamedAPIResource `json:"condition"`
-	Names     []Name           `json:"names"`
+	ID        int                                  `json:"id"`
+	Name      string                               `json:"name"`
+	Condition NamedAPIResource[EncounterCondition] `json:"condition"`
+	Names     []Name                               `json:"names"`
 }

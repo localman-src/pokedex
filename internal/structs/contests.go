@@ -1,16 +1,16 @@
 package structs
 
 type ContestType struct {
-	ID          int              `json:"id"`
-	Name        string           `json:"Name"`
-	BerryFlavor NamedAPIResource `json:"berry_flavor"`
-	Names       []ContestName    `json:"names"`
+	ID          int                           `json:"id"`
+	Name        string                        `json:"Name"`
+	BerryFlavor NamedAPIResource[BerryFlavor] `json:"berry_flavor"`
+	Names       []ContestName                 `json:"names"`
 }
 
 type ContestName struct {
-	Name     string           `json:"id"`
-	Color    string           `json:"color"`
-	Language NamedAPIResource `json:"language"`
+	Name     string                     `json:"id"`
+	Color    string                     `json:"color"`
+	Language NamedAPIResource[Language] `json:"language"`
 }
 
 type ContestEffect struct {
@@ -22,8 +22,8 @@ type ContestEffect struct {
 }
 
 type SuperContestEffect struct {
-	ID                int                `json:"id"`
-	Appeal            int                `json:"appeal"`
-	FlavorTextEntries []FlavorText       `json:"flavor_text_entries"`
-	Moves             []NamedAPIResource `json:"moves"`
+	ID                int                      `json:"id"`
+	Appeal            int                      `json:"appeal"`
+	FlavorTextEntries []FlavorText             `json:"flavor_text_entries"`
+	Moves             []NamedAPIResource[Move] `json:"moves"`
 }

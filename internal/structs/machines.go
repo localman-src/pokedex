@@ -1,8 +1,8 @@
 package structs
 
 type Machine struct {
-	ID           int              `json:"id"`
-	Item         NamedAPIResource `json:"item"`
-	Move         NamedAPIResource `json:"move"`
-	VersionGroup NamedAPIResource `json:"version_group"`
+	ID           int                            `json:"id"`
+	Item         NamedAPIResource[Item]         `json:"item"`
+	Move         NamedAPIResource[Move]         `json:"move"`
+	VersionGroup NamedAPIResource[VersionGroup] `json:"version_group"`
 }

@@ -9,12 +9,7 @@ import (
 	"github.com/localman-src/pokedex/internal/structs"
 )
 
-func PrintResourceList(resourceList structs.NamedAPIResourceList) {
-	for _, location := range resourceList.Results {
-		println(location.Name)
-	}
-}
-func GetAreas(url string) (*structs.NamedAPIResourceList, error) {
+func GetAreas(url string) (areaList *structs.NamedAPIResourceList[structs.LocationArea], err error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching areas: %v", err)
@@ -25,12 +20,11 @@ func GetAreas(url string) (*structs.NamedAPIResourceList, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error reading response body: %v", err)
 	}
-	locationResponse := structs.NamedAPIResourceList{}
 
-	err = json.Unmarshal(body, &locationResponse)
+	err = json.Unmarshal(body, &areaList)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshaling JSML: %v", err)
 	}
 
-	return &locationResponse, nil
+	return areaList, err
 }

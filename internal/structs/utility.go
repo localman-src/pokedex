@@ -8,42 +8,42 @@ type Language struct {
 	ISO3166  string `json:"iso3166"`
 	Names    []Name `json:"names"`
 }
-type APIResource struct {
+type APIResource[T any] struct {
 	URL string `json:"url"`
 }
 
 type Description struct {
-	Description string           `json:"description"`
-	Language    NamedAPIResource `json:"language"`
+	Description string                     `json:"description"`
+	Language    NamedAPIResource[Language] `json:"language"`
 }
 
 type Effect struct {
-	Effect   string           `json:"description"`
-	Language NamedAPIResource `json:"language"`
+	Effect   string                     `json:"description"`
+	Language NamedAPIResource[Language] `json:"language"`
 }
 
 type Encounter struct {
-	MinLevel        int                `json:"min_level"`
-	MaxLevel        int                `json:"max_level"`
-	ConditionValues []NamedAPIResource `json:"condition_values"`
-	Chance          int                `json:"chance"`
-	Method          []NamedAPIResource `json:"method"`
+	MinLevel        int                                         `json:"min_level"`
+	MaxLevel        int                                         `json:"max_level"`
+	ConditionValues []NamedAPIResource[EncounterConditionValue] `json:"condition_values"`
+	Chance          int                                         `json:"chance"`
+	Method          []NamedAPIResource[EncounterMethod]         `json:"method"`
 }
 
 type FlavorText struct {
-	FlavorText string             `json:"flavor_text"`
-	Language   []NamedAPIResource `json:"language"`
-	Version    []NamedAPIResource `json:"version"`
+	FlavorText string                       `json:"flavor_text"`
+	Language   []NamedAPIResource[Language] `json:"language"`
+	Version    []NamedAPIResource[Version]  `json:"version"`
 }
 
 type GenerationGameIndex struct {
-	GameIndex  int              `json:"game_index"`
-	Generation NamedAPIResource `json:"generation"`
+	GameIndex  int                          `json:"game_index"`
+	Generation NamedAPIResource[Generation] `json:"generation"`
 }
 
 type MachineVersionDetail struct {
-	Machine      APIResource      `json:"machine"`
-	VersionGroup NamedAPIResource `json:"version_group"`
+	Machine      APIResource[Machine]           `json:"machine"`
+	VersionGroup NamedAPIResource[VersionGroup] `json:"version_group"`
 }
 
 type Name struct {
@@ -51,32 +51,47 @@ type Name struct {
 	Language string `json:"version_group"`
 }
 
-type NamedAPIResource struct {
+type NamedAPIResource[T any] struct {
 	Name string `json:"name"`
 	URL  string `json:"url"`
 }
 
-type NamedAPIResourceList struct {
-	Count    int                `json:"count"`
-	Next     string             `json:"next"`
-	Previous string             `json:"previous"`
-	Results  []NamedAPIResource `json:"results"`
+func (r *NamedAPIResource[T]) Get() (response T) {
+
+	return response
+}
+
+type NamedAPIResourceList[T any] struct {
+	Count    int                   `json:"count"`
+	Next     string                `json:"next"`
+	Previous string                `json:"previous"`
+	Results  []NamedAPIResource[T] `json:"results"`
+}
+
+func (r *NamedAPIResourceList[T]) Print() {
+	for _, resource := range r.Results {
+		println(resource.Name)
+	}
 }
 
 type VerboseEffect struct {
-	Effect      string           `json:"effect"`
-	ShortEffect string           `json:"short_effect"`
-	Language    NamedAPIResource `json:"language"`
+	Effect      string                     `json:"effect"`
+	ShortEffect string                     `json:"short_effect"`
+	Language    NamedAPIResource[Language] `json:"language"`
 }
 
 type VersionEncounterDetail struct {
-	Version          NamedAPIResource `json:"version"`
-	MaxChance        int              `json:"max_chance"`
-	EncounterDetails []Encounter      `json:"encounter_details"`
+	Version          NamedAPIResource[Version] `json:"version"`
+	MaxChance        int                       `json:"max_chance"`
+	EncounterDetails []Encounter               `json:"encounter_details"`
 }
 
+type VersionGameIndex struct {
+	GameIndex int                       `json:"game_index"`
+	Version   NamedAPIResource[Version] `json:"version"`
+}
 type VersionGroupFlavorText struct {
-	Text         string           `json:"text"`
-	Language     NamedAPIResource `json:"language"`
-	VersionGroup NamedAPIResource `json:"version_group"`
+	Text         string                         `json:"text"`
+	Language     NamedAPIResource[Language]     `json:"language"`
+	VersionGroup NamedAPIResource[VersionGroup] `json:"version_group"`
 }
