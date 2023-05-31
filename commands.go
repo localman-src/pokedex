@@ -29,7 +29,7 @@ func commandExit(cfg *config, params ...string) error {
 
 func commandMap(cfg *config, params ...string) error {
 
-	resp, err := pokeapi.GetResourceList(pokeapi.EndPoints.LocationArea, cfg.MapOffset, cfg.ResourceLimit)
+	resp, err := pokeapi.GetResourceList("/location-area", cfg.MapOffset, cfg.ResourceLimit)
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 		return err
@@ -117,6 +117,17 @@ func commandInspect(cfg *config, params ...string) error {
 	fmt.Println("Types:")
 	for _, poketype := range entry.Types {
 		fmt.Printf("  - %s\n", poketype.Type.Name)
+	}
+	fmt.Println("Factoid:")
+	fmt.Println(entry.Description[0].FlavorText)
+
+	return nil
+}
+
+func commandPokedex(cfg *config, params ...string) error {
+	fmt.Println("Your Pokedex:")
+	for _, entry := range cfg.Pokedex {
+		fmt.Printf(" - %dx %s\n", entry.Count, entry.Name)
 	}
 
 	return nil

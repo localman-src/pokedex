@@ -14,14 +14,6 @@ const baseURL = "https://pokeapi.co/api/v2"
 
 var cache = pokecache.NewCache()
 
-type endPoints struct {
-	LocationArea string
-}
-
-var EndPoints = endPoints{
-	LocationArea: "/location-area",
-}
-
 func GetResourceList(endpoint string, offset, limit int) (resourceList *structs.NamedAPIResourceList[any], err error) {
 	url := fmt.Sprintf("%s%s?limit=%d&offset=%d", baseURL, endpoint, limit, offset)
 
@@ -64,19 +56,8 @@ func GetLocationArea(name string) (locationAreaObject *structs.LocationArea, err
 		URL: fmt.Sprintf("%s/location-area/%s/", baseURL, name),
 	}
 
-	body, exists := cache.Get(resource.URL)
-	if exists {
-		err = json.Unmarshal(body, &locationAreaObject)
-		if err != nil {
-			fmt.Printf("error unmarshalling cached data: %v\n", err)
-			fmt.Println("attempting to request from pokeapi.co")
-		} else {
-			cache.Set(resource.URL)
-			return locationAreaObject, err
-		}
-	}
+	locationAreaObject, err = CachedGet(resource)
 
-	locationAreaObject, err = resource.GetPokeAPI()
 	return locationAreaObject, err
 }
 

@@ -67,14 +67,21 @@ func NewCommandLibrary() *commandLibrary {
 		"catch": {
 			name:        "catch",
 			description: "Attempt to catch the given pokemon",
-			helptext:    "Use: `catch <pokemon>' to attempt to catch <pokemon>",
+			helptext:    "Use: 'catch <pokemon>' to attempt to catch <pokemon>",
 			callback:    commandCatch,
 		},
 		"inspect": {
 			name:        "inspect",
 			description: "Review data from caught pokemon",
-			helptext:    "Use: pokedex <pokemon> to review data of caught pokemon",
+			helptext:    "Use: 'inspect <pokemon>' to review data of caught pokemon",
 			callback:    commandInspect,
+		},
+
+		"pokedex": {
+			name:        "pokedex",
+			description: "Lists all pokemon that you have caught",
+			helptext:    "Use: 'pokedex' print all caught pokemon",
+			callback:    commandPokedex,
 		},
 	}
 }
