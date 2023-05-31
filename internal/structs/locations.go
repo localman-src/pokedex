@@ -10,7 +10,7 @@ type Location struct {
 }
 
 type LocationArea struct {
-	ID                   int                        `json:"ID"`
+	ID                   int                        `json:"id"`
 	Name                 string                     `json:"name"`
 	GameIndex            int                        `json:"game_index"`
 	EncounterMethodRates []EncounterMethodRate      `json:"encounter_method_rates"`
@@ -30,7 +30,7 @@ type EncounterVersionDetails struct {
 }
 
 type PokemonEncounter struct {
-	Name           NamedAPIResource[Pokemon] `json:"name"`
+	Pokemon        NamedAPIResource[Pokemon] `json:"pokemon"`
 	VersionDetails []VersionEncounterDetail  `json:"version_details"`
 }
 

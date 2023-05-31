@@ -27,7 +27,7 @@ type Encounter struct {
 	MaxLevel        int                                         `json:"max_level"`
 	ConditionValues []NamedAPIResource[EncounterConditionValue] `json:"condition_values"`
 	Chance          int                                         `json:"chance"`
-	Method          []NamedAPIResource[EncounterMethod]         `json:"method"`
+	Method          NamedAPIResource[EncounterMethod]           `json:"method"`
 }
 
 type FlavorText struct {
@@ -47,8 +47,8 @@ type MachineVersionDetail struct {
 }
 
 type Name struct {
-	Name     string `json:"name"`
-	Language string `json:"version_group"`
+	Name     string                     `json:"name"`
+	Language NamedAPIResource[Language] `json:"language"`
 }
 
 type NamedAPIResource[T any] struct {

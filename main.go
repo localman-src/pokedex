@@ -18,7 +18,7 @@ type config struct {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(cfg *config) error
+	callback    func(cfg *config, params ...string) error
 }
 
 type commandLibrary map[string]cliCommand
@@ -32,17 +32,17 @@ func (c commandLibrary) getCommand(name string) (cliCommand, error) {
 	return command, nil
 }
 
-func commandHelp(cfg *config) error {
+func commandHelp(cfg *config, params ...string) error {
 	fmt.Println("Welcome to the Pokedex!")
 	return nil
 }
 
-func commandExit(cfg *config) error {
+func commandExit(cfg *config, params ...string) error {
 	os.Exit(0)
 	return nil
 }
 
-func commandMap(cfg *config) error {
+func commandMap(cfg *config, params ...string) error {
 
 	resp, err := pokeapi.GetResourceList(pokeapi.EndPoints.LocationArea, cfg.MapOffset, cfg.ResourceLimit)
 	if err != nil {
@@ -56,20 +56,34 @@ func commandMap(cfg *config) error {
 	return nil
 }
 
-func commandMapB(cfg *config) error {
+func commandMapB(cfg *config, params ...string) error {
 
 	newOffset := cfg.MapOffset - cfg.ResourceLimit
 	if newOffset <= 0 {
 		newOffset = 0
 	}
-	resp, err := pokeapi.GetResourceList("/location-area", newOffset, cfg.ResourceLimit)
+	resourceList, err := pokeapi.GetResourceList("/location-area", newOffset, cfg.ResourceLimit)
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 	} else {
-		resp.Print()
+		resourceList.Print()
 		cfg.MapOffset = newOffset
 		fmt.Printf("New Offset: %d\n", cfg.MapOffset)
 	}
+	return nil
+}
+
+func commandExplore(cfg *config, params ...string) error {
+	locationArea, err := pokeapi.GetLocationArea(params[0])
+	if err != nil {
+		fmt.Printf("error: %s\n", err)
+	} else {
+		fmt.Printf("Found these pokemon in %s\n", params[0])
+		for _, encounter := range locationArea.PokemonEncounters {
+			fmt.Printf(" - %s\n", encounter.Pokemon.Name)
+		}
+	}
+
 	return nil
 }
 
@@ -96,6 +110,11 @@ func main() {
 			description: "Displays the previous 20 location areas.",
 			callback:    commandMapB,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Use: explore <area>. Displays pokemon for the given area.",
+			callback:    commandExplore,
+		},
 	}
 
 	config := config{
@@ -107,12 +126,19 @@ func main() {
 		fmt.Printf("pokedex > ")
 		input, _ := reader.ReadString('\n')
 		input = strings.Replace(input, "\n", "", -1)
+		params := strings.Split(input, " ")
+		fmt.Println(params)
 
-		command, err := commands.getCommand(input)
+		command, err := commands.getCommand(params[0])
 		if err != nil {
 			fmt.Printf("error: %s\n", err)
 		} else {
-			command.callback(&config)
+			if len(params) == 1 {
+				command.callback(&config)
+			} else {
+				command.callback(&config, params[1:]...)
+			}
+
 		}
 
 	}
