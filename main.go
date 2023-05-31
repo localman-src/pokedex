@@ -11,8 +11,8 @@ import (
 )
 
 type config struct {
-	NextMap string
-	PrevMap string
+	MapOffset     int
+	ResourceLimit int
 }
 
 type cliCommand struct {
@@ -44,28 +44,31 @@ func commandExit(cfg *config) error {
 
 func commandMap(cfg *config) error {
 
-	resp, err := pokeapi.GetAreas(cfg.NextMap)
+	resp, err := pokeapi.GetResourceList(pokeapi.EndPoints.LocationArea, cfg.MapOffset, cfg.ResourceLimit)
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 	} else {
 		resp.Print()
-		cfg.NextMap = resp.Next
-		cfg.PrevMap = resp.Previous
+		cfg.MapOffset += 20
+		fmt.Printf("New Offset: %d\n", cfg.MapOffset)
 	}
 
 	return nil
 }
 
 func commandMapB(cfg *config) error {
-	if cfg.PrevMap != "" {
-		resp, err := pokeapi.GetAreas(cfg.PrevMap)
-		if err != nil {
-			fmt.Printf("error: %s\n", err)
-		} else {
-			resp.Print()
-			cfg.NextMap = resp.Next
-			cfg.PrevMap = resp.Previous
-		}
+
+	newOffset := cfg.MapOffset - cfg.ResourceLimit
+	if newOffset <= 0 {
+		newOffset = 0
+	}
+	resp, err := pokeapi.GetResourceList("/location-area", newOffset, cfg.ResourceLimit)
+	if err != nil {
+		fmt.Printf("error: %s\n", err)
+	} else {
+		resp.Print()
+		cfg.MapOffset = newOffset
+		fmt.Printf("New Offset: %d\n", cfg.MapOffset)
 	}
 	return nil
 }
@@ -96,8 +99,8 @@ func main() {
 	}
 
 	config := config{
-		NextMap: "https://pokeapi.co/api/v2/location-area/",
-		PrevMap: "",
+		MapOffset:     0,
+		ResourceLimit: 20,
 	}
 
 	for {

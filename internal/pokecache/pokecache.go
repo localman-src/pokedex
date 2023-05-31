@@ -1,6 +1,7 @@
 package pokecache
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -27,7 +28,7 @@ func (p *pokecache) Add(key string, val []byte) {
 func (p *pokecache) Get(key string) ([]byte, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-
+	fmt.Println("Checking key: ", key)
 	var output []byte
 	entry, ok := p.cache[key]
 	if !ok {
@@ -41,7 +42,10 @@ func (p *pokecache) ReapLoop(t time.Duration) {
 	p.mu.Lock()
 }
 
-func NewCache() pokecache {
-
-	return pokecache{}
+func NewCache() *pokecache {
+	cache := pokecache{
+		mu:    sync.Mutex{},
+		cache: map[string]cacheEntry{},
+	}
+	return &cache
 }
