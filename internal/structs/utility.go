@@ -1,5 +1,12 @@
 package structs
 
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
 type Language struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
@@ -10,6 +17,27 @@ type Language struct {
 }
 type APIResource[T any] struct {
 	URL string `json:"url"`
+}
+
+func (r *APIResource[T]) GetPokeAPI() (resourceObject *T, err error) {
+	response, err := http.Get(r.URL)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %v", err)
+	}
+
+	err = json.Unmarshal(body, &resourceObject)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling JSON: %v", err)
+	}
+
+	return resourceObject, err
+
 }
 
 type Description struct {

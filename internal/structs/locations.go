@@ -1,5 +1,7 @@
 package structs
 
+import "fmt"
+
 type Location struct {
 	ID          string                           `json:"id"`
 	Name        string                           `json:"name"`
@@ -17,6 +19,13 @@ type LocationArea struct {
 	Location             NamedAPIResource[Location] `json:"location"`
 	Names                []Name                     `json:"names"`
 	PokemonEncounters    []PokemonEncounter         `json:"pokemon_encounters"`
+}
+
+func (l *LocationArea) PrintPokemonEncounters() {
+	fmt.Printf("Found these pokemon in %s:\n", l.Name)
+	for _, encounter := range l.PokemonEncounters {
+		fmt.Printf(" - %s\n", encounter.Pokemon.Name)
+	}
 }
 
 type EncounterMethodRate struct {

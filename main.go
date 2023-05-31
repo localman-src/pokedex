@@ -8,8 +8,9 @@ import (
 )
 
 type config struct {
-	MapOffset     int
-	ResourceLimit int
+	MapOffset       int
+	ResourceLimit   int
+	CurrentLocation string
 }
 
 func main() {

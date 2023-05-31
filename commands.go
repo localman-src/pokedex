@@ -42,7 +42,7 @@ func commandMap(cfg *config, params ...string) error {
 		fmt.Printf("error: %s\n", err)
 	} else {
 		resp.Print()
-		cfg.MapOffset += 20
+		cfg.MapOffset += cfg.ResourceLimit
 		fmt.Printf("New Offset: %d\n", cfg.MapOffset)
 	}
 
@@ -71,10 +71,7 @@ func commandExplore(cfg *config, params ...string) error {
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 	} else {
-		fmt.Printf("Found these pokemon in %s\n", params[0])
-		for _, encounter := range locationArea.PokemonEncounters {
-			fmt.Printf(" - %s\n", encounter.Pokemon.Name)
-		}
+		locationArea.PrintPokemonEncounters()
 	}
 
 	return nil
