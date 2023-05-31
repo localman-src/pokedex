@@ -118,8 +118,17 @@ func commandInspect(cfg *config, params ...string) error {
 	for _, poketype := range entry.Types {
 		fmt.Printf("  - %s\n", poketype.Type.Name)
 	}
-	fmt.Println("Factoid:")
-	fmt.Println(entry.Description[0].FlavorText)
+	englishFactoids := []string{}
+	englishVersions := []string{}
+	for _, fact := range entry.Description {
+		if fact.Language.Name == "en" {
+			englishFactoids = append(englishFactoids, fact.FlavorText)
+			englishVersions = append(englishVersions, fact.Version.Name)
+		}
+	}
+	factIndex := cfg.prng.Intn(len(englishFactoids))
+	fmt.Printf("Factoid: (%s)\n", englishVersions[factIndex])
+	fmt.Println(englishFactoids[factIndex])
 
 	return nil
 }
