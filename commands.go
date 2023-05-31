@@ -1,32 +1,24 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
 	"github.com/localman-src/pokedex/internal/pokeapi"
 )
 
-type cliCommand struct {
-	name        string
-	description string
-	callback    func(cfg *config, params ...string) error
-}
-
-type commandLibrary map[string]cliCommand
-
-func (c commandLibrary) getCommand(name string) (cliCommand, error) {
-	command, ok := c[name]
-	if !ok {
-		return command, errors.New("no such command")
+func commandHelp(cfg *config, params ...string) error {
+	if params == nil {
+		fmt.Println("Welcome to the Pokedex!")
+		cfg.Commands.PrintCommands()
+	} else {
+		command, err := cfg.Commands.getCommand(params[0])
+		if err != nil {
+			return err
+		}
+		fmt.Println(command.helptext)
 	}
 
-	return command, nil
-}
-
-func commandHelp(cfg *config, params ...string) error {
-	fmt.Println("Welcome to the Pokedex!")
 	return nil
 }
 
@@ -40,6 +32,7 @@ func commandMap(cfg *config, params ...string) error {
 	resp, err := pokeapi.GetResourceList(pokeapi.EndPoints.LocationArea, cfg.MapOffset, cfg.ResourceLimit)
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
+		return err
 	} else {
 		resp.Print()
 		cfg.MapOffset += cfg.ResourceLimit
@@ -58,6 +51,7 @@ func commandMapB(cfg *config, params ...string) error {
 	resourceList, err := pokeapi.GetResourceList("/location-area", newOffset, cfg.ResourceLimit)
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
+		return err
 	} else {
 		resourceList.Print()
 		cfg.MapOffset = newOffset
@@ -70,6 +64,7 @@ func commandExplore(cfg *config, params ...string) error {
 	locationArea, err := pokeapi.GetLocationArea(params[0])
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
+		return err
 	} else {
 		locationArea.PrintPokemonEncounters()
 	}
@@ -77,32 +72,52 @@ func commandExplore(cfg *config, params ...string) error {
 	return nil
 }
 
-func NewCommandLibrary() commandLibrary {
-	return commandLibrary{
-		"help": {
-			name:        "help",
-			description: "Displays a help message",
-			callback:    commandHelp,
-		},
-		"exit": {
-			name:        "exit",
-			description: "Exit the Pokedex",
-			callback:    commandExit,
-		},
-		"map": {
-			name:        "map",
-			description: "Displays 20 location areas in the Pokemon World.\n Each subsequent call to map will display then next 20 locations",
-			callback:    commandMap,
-		},
-		"mapb": {
-			name:        "mapb",
-			description: "Displays the previous 20 location areas.",
-			callback:    commandMapB,
-		},
-		"explore": {
-			name:        "explore",
-			description: "Use: explore <area>. Displays pokemon for the given area.",
-			callback:    commandExplore,
-		},
+func commandCatch(cfg *config, params ...string) error {
+	pokemon, err := pokeapi.GetPokemon(params[0])
+	if err != nil {
+		fmt.Println(err)
+		return err
 	}
+
+	species, err := pokeapi.CachedGet(pokemon.Species.ToAPIResource())
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	catchRoll := cfg.prng.Intn(255)
+
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokemon.Name)
+	if catchRoll < species.CaptureRate {
+		fmt.Printf("Caught: %s (Roll: %d vs Catch Rate: %d)\n", pokemon.Name, catchRoll, species.CaptureRate)
+		entry, err := NewPokedexEntry(pokemon)
+		if err != nil {
+			return err
+		}
+		cfg.Pokedex.Add(entry)
+	} else {
+		fmt.Printf("%s escaped! (Roll: %d vs Catch Rate: %d)\n", pokemon.Name, catchRoll, species.CaptureRate)
+	}
+
+	return nil
+}
+
+func commandInspect(cfg *config, params ...string) error {
+	entry, err := cfg.Pokedex.Get(params[0])
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Name: %s\n# Caught: %d\nHeight: %d\nWeight: %d\n", entry.Name, entry.Count, entry.Height, entry.Weight)
+	fmt.Println("Stats:")
+	for _, stat := range entry.Stats {
+		fmt.Printf("  - %s: %d\n", stat.Stat.Name, stat.BaseStat)
+	}
+
+	fmt.Println("Types:")
+	for _, poketype := range entry.Types {
+		fmt.Printf("  - %s\n", poketype.Type.Name)
+	}
+
+	return nil
 }

@@ -59,9 +59,9 @@ func GetResourceList(endpoint string, offset, limit int) (resourceList *structs.
 	return resourceList, err
 }
 
-func GetLocationArea(locationAreaName string) (locationAreaObject *structs.LocationArea, err error) {
+func GetLocationArea(name string) (locationAreaObject *structs.LocationArea, err error) {
 	resource := structs.APIResource[structs.LocationArea]{
-		URL: fmt.Sprintf("%s/location-area/%s/", baseURL, locationAreaName),
+		URL: fmt.Sprintf("%s/location-area/%s/", baseURL, name),
 	}
 
 	body, exists := cache.Get(resource.URL)
@@ -78,4 +78,45 @@ func GetLocationArea(locationAreaName string) (locationAreaObject *structs.Locat
 
 	locationAreaObject, err = resource.GetPokeAPI()
 	return locationAreaObject, err
+}
+
+func GetPokemon(name string) (pokemonObject *structs.Pokemon, err error) {
+	resource := structs.APIResource[structs.Pokemon]{
+		URL: fmt.Sprintf("%s/pokemon/%s/", baseURL, name),
+	}
+
+	pokemonObject, err = CachedGet(resource)
+	return pokemonObject, err
+}
+
+func GetSpecies(name string) (pokemonObject *structs.PokemonSpecies, err error) {
+	resource := structs.APIResource[structs.PokemonSpecies]{
+		URL: fmt.Sprintf("%s/pokemon/%s/", baseURL, name),
+	}
+
+	pokemonObject, err = CachedGet(resource)
+	return pokemonObject, err
+}
+
+func CachedGet[T structs.PokeAPIObject](resource structs.APIResource[T]) (object *T, err error) {
+	body, exists := cache.Get(resource.URL)
+	if exists {
+		err := json.Unmarshal(body, &object)
+		if err != nil {
+			fmt.Printf("error unmarshalling cached data: %v\n", err)
+			fmt.Println("attempting to request from pokeapi.co")
+		} else {
+			cache.Set(resource.URL)
+			return object, err
+		}
+	}
+
+	object, err = resource.GetPokeAPI()
+	return object, err
+}
+
+func NamedAPIResourceToAPIResource[T structs.PokeAPIObject](resource structs.NamedAPIResource[T]) structs.APIResource[T] {
+	return structs.APIResource[T]{
+		URL: resource.URL,
+	}
 }

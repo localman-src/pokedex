@@ -59,9 +59,9 @@ type Encounter struct {
 }
 
 type FlavorText struct {
-	FlavorText string                       `json:"flavor_text"`
-	Language   []NamedAPIResource[Language] `json:"language"`
-	Version    []NamedAPIResource[Version]  `json:"version"`
+	FlavorText string                     `json:"flavor_text"`
+	Language   NamedAPIResource[Language] `json:"language"`
+	Version    NamedAPIResource[Version]  `json:"version"`
 }
 
 type GenerationGameIndex struct {
@@ -82,6 +82,33 @@ type Name struct {
 type NamedAPIResource[T any] struct {
 	Name string `json:"name"`
 	URL  string `json:"url"`
+}
+
+func (r *NamedAPIResource[T]) GetPokeAPI() (resourceObject *T, err error) {
+	response, err := http.Get(r.URL)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %v", err)
+	}
+
+	err = json.Unmarshal(body, &resourceObject)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling JSON: %v", err)
+	}
+
+	return resourceObject, err
+
+}
+
+func (r *NamedAPIResource[T]) ToAPIResource() (resourceObject APIResource[T]) {
+	return APIResource[T]{
+		URL: r.URL,
+	}
 }
 
 func (r *NamedAPIResource[T]) Get() (response T) {

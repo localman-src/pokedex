@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 )
@@ -11,14 +12,20 @@ type config struct {
 	MapOffset       int
 	ResourceLimit   int
 	CurrentLocation string
+	Commands        *commandLibrary
+	Pokedex         Pokedex
+	prng            *rand.Rand
 }
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
-	commands := NewCommandLibrary()
 	config := config{
-		MapOffset:     0,
-		ResourceLimit: 20,
+		MapOffset:       0,
+		ResourceLimit:   20,
+		CurrentLocation: "canalave-city-area",
+		Commands:        NewCommandLibrary(),
+		Pokedex:         NewPokedex(),
+		prng:            rand.New(rand.NewSource(90)),
 	}
 
 	for {
@@ -26,16 +33,22 @@ func main() {
 		input, _ := reader.ReadString('\n')
 		input = strings.Replace(input, "\n", "", -1)
 		params := strings.Split(input, " ")
-		fmt.Println(params)
+		//fmt.Println(params)
 
-		command, err := commands.getCommand(params[0])
+		command, err := config.Commands.getCommand(params[0])
 		if err != nil {
 			fmt.Printf("error: %s\n", err)
 		} else {
 			if len(params) == 1 {
-				command.callback(&config)
+				err = command.callback(&config)
+				if err != nil {
+					fmt.Printf("error: %s\n", err)
+				}
 			} else {
-				command.callback(&config, params[1:]...)
+				err = command.callback(&config, params[1:]...)
+				if err != nil {
+					fmt.Printf("error: %s\n", err)
+				}
 			}
 
 		}
