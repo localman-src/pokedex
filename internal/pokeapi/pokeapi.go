@@ -27,12 +27,12 @@ func GetResourceList(endpoint string, offset, limit int) (areaList *structs.Name
 
 	body, exists := cache.Get(url)
 	if exists {
-		fmt.Println("Taking Cached Value", url)
 		err = json.Unmarshal(body, &areaList)
 		if err != nil {
-			fmt.Printf("error unmarshalling cached JSML: %v\n", err)
+			fmt.Printf("error unmarshalling cached data: %v\n", err)
 			fmt.Println("attempting to request from pokeapi.co")
 		} else {
+			cache.Set(url)
 			return areaList, err
 		}
 	}

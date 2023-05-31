@@ -1,14 +1,14 @@
 package pokecache
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
 
 type pokecache struct {
-	mu    sync.Mutex
-	cache map[string]cacheEntry
+	mu     sync.Mutex
+	cache  map[string]cacheEntry
+	expiry time.Duration
 }
 type cacheEntry struct {
 	createdAt time.Time
@@ -28,7 +28,6 @@ func (p *pokecache) Add(key string, val []byte) {
 func (p *pokecache) Get(key string) ([]byte, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	fmt.Println("Checking key: ", key)
 	var output []byte
 	entry, ok := p.cache[key]
 	if !ok {
@@ -38,14 +37,37 @@ func (p *pokecache) Get(key string) ([]byte, bool) {
 	return entry.val, true
 }
 
+func (p *pokecache) Set(key string) {
+	if entry, ok := p.cache[key]; ok {
+		entry.createdAt = time.Now().UTC()
+		p.cache[key] = entry
+	}
+
+}
+
 func (p *pokecache) ReapLoop(t time.Duration) {
-	p.mu.Lock()
+	reapTime := time.NewTicker(t)
+	for ; ; <-reapTime.C {
+		p.mu.Lock()
+		for key, entry := range p.cache {
+			reapEntry := entry.createdAt.Add(t).Before(time.Now().UTC())
+			if reapEntry {
+				delete(p.cache, key)
+			}
+		}
+		p.mu.Unlock()
+	}
 }
 
 func NewCache() *pokecache {
+
 	cache := pokecache{
-		mu:    sync.Mutex{},
-		cache: map[string]cacheEntry{},
+		mu:     sync.Mutex{},
+		cache:  map[string]cacheEntry{},
+		expiry: time.Duration(20 * time.Minute),
 	}
+
+	go cache.ReapLoop(cache.expiry)
+
 	return &cache
 }
