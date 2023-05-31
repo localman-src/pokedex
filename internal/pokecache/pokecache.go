@@ -59,12 +59,12 @@ func (p *pokecache) ReapLoop(t time.Duration) {
 	}
 }
 
-func NewCache() *pokecache {
+func NewCache(duration time.Duration) *pokecache {
 
 	cache := pokecache{
 		mu:     sync.Mutex{},
 		cache:  map[string]cacheEntry{},
-		expiry: time.Duration(20 * time.Minute),
+		expiry: duration,
 	}
 
 	go cache.ReapLoop(cache.expiry)

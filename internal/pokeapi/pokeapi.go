@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/localman-src/pokedex/internal/pokecache"
 	"github.com/localman-src/pokedex/internal/structs"
@@ -12,7 +13,7 @@ import (
 
 const baseURL = "https://pokeapi.co/api/v2"
 
-var cache = pokecache.NewCache()
+var cache = pokecache.NewCache(20 * time.Minute)
 
 func GetResourceList(endpoint string, offset, limit int) (resourceList *structs.NamedAPIResourceList[any], err error) {
 	url := fmt.Sprintf("%s%s?limit=%d&offset=%d", baseURL, endpoint, limit, offset)
