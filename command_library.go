@@ -83,5 +83,17 @@ func NewCommandLibrary() *commandLibrary {
 			helptext:    "Use: 'pokedex' print all caught pokemon",
 			callback:    commandPokedex,
 		},
+		"save": {
+			name:        "save",
+			description: "Saves pokedex data to disk.",
+			helptext:    "Use: 'save' save pokedex data to disk.",
+			callback:    commandSave,
+		},
+		"load": {
+			name:        "load",
+			description: "Loads pokedex data from disk.",
+			helptext:    "Use: 'load' load pokedex data from disk.",
+			callback:    commandLoad,
+		},
 	}
 }

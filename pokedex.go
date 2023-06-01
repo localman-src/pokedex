@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
+	"os"
 
 	"github.com/localman-src/pokedex/internal/pokeapi"
 	"github.com/localman-src/pokedex/internal/structs"
@@ -14,8 +16,9 @@ type PokedexEntry struct {
 	Weight      int
 	Stats       []structs.PokemonStat
 	Types       []structs.PokemonType
-	Description []structs.FlavorText
+	Description []structs.FlavorText `json:"-"`
 }
+
 type Pokedex map[string]PokedexEntry
 
 func (p Pokedex) Add(e PokedexEntry) {
@@ -35,6 +38,40 @@ func (p Pokedex) Get(name string) (entry PokedexEntry, err error) {
 	}
 
 	return entry, err
+}
+
+func (p Pokedex) Save() error {
+	f, err := os.Create("./pokedex.sav")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	enc := gob.NewEncoder(f)
+	err = enc.Encode(p)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *Pokedex) Load() (*Pokedex, error) {
+	var loadedDex Pokedex
+
+	data, err := os.Open("./pokedex.sav")
+	if err != nil {
+		return &loadedDex, err
+	}
+	defer data.Close()
+
+	enc := gob.NewDecoder(data)
+	err = enc.Decode(&loadedDex)
+	if err != nil {
+		return &loadedDex, err
+	}
+
+	return &loadedDex, nil
 }
 
 func NewPokedex() Pokedex {

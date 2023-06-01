@@ -141,3 +141,28 @@ func commandPokedex(cfg *config, params ...string) error {
 
 	return nil
 }
+
+func commandSave(cfg *config, params ...string) error {
+	err := cfg.Pokedex.Save()
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Pokedex saved to disk successfully.")
+
+	return nil
+}
+
+func commandLoad(cfg *config, params ...string) error {
+	loadedDex, err := cfg.Pokedex.Load()
+	if err != nil {
+		return err
+	}
+
+	cfg.Pokedex = *loadedDex
+
+	fmt.Println("Pokedex loaded from disk successfully.")
+
+	return nil
+}
