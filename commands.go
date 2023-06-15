@@ -127,7 +127,7 @@ func commandInspect(cfg *config, params ...string) error {
 		}
 	}
 	factIndex := cfg.prng.Intn(len(englishFactoids))
-	fmt.Printf("Factoid: (%s)\n", englishVersions[factIndex])
+	fmt.Printf("Info: (%s)\n", englishVersions[factIndex])
 	fmt.Println(englishFactoids[factIndex])
 
 	return nil
@@ -144,7 +144,6 @@ func commandPokedex(cfg *config, params ...string) error {
 
 func commandSave(cfg *config, params ...string) error {
 	err := cfg.Pokedex.Save()
-
 	if err != nil {
 		return err
 	}

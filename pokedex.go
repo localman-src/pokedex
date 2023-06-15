@@ -1,7 +1,8 @@
 package main
 
 import (
-	"encoding/gob"
+	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -16,7 +17,7 @@ type PokedexEntry struct {
 	Weight      int
 	Stats       []structs.PokemonStat
 	Types       []structs.PokemonType
-	Description []structs.FlavorText `json:"-"`
+	Description []structs.FlavorText
 }
 
 type Pokedex map[string]PokedexEntry
@@ -41,14 +42,21 @@ func (p Pokedex) Get(name string) (entry PokedexEntry, err error) {
 }
 
 func (p Pokedex) Save() error {
-	f, err := os.Create("./pokedex.sav")
+	f, err := os.Create("./pokedex.json.gz")
 	if err != nil {
 		return err
 	}
+	zw := gzip.NewWriter(f)
 	defer f.Close()
+	defer zw.Close()
 
-	enc := gob.NewEncoder(f)
-	err = enc.Encode(p)
+	bytes, err := json.Marshal(p)
+	if err != nil {
+		return err
+
+	}
+
+	_, err = zw.Write(bytes)
 	if err != nil {
 		return err
 	}
@@ -58,15 +66,20 @@ func (p Pokedex) Save() error {
 
 func (p *Pokedex) Load() (*Pokedex, error) {
 	var loadedDex Pokedex
-
-	data, err := os.Open("./pokedex.sav")
+	f, err := os.Open("./pokedex.json.gz")
 	if err != nil {
 		return &loadedDex, err
 	}
-	defer data.Close()
+	defer f.Close()
 
-	enc := gob.NewDecoder(data)
-	err = enc.Decode(&loadedDex)
+	zr, err := gzip.NewReader(f)
+	if err != nil {
+		return &loadedDex, err
+	}
+	defer zr.Close()
+
+	decoder := json.NewDecoder(zr)
+	decoder.Decode(&loadedDex)
 	if err != nil {
 		return &loadedDex, err
 	}
@@ -76,6 +89,7 @@ func (p *Pokedex) Load() (*Pokedex, error) {
 
 func NewPokedex() Pokedex {
 	return Pokedex{}
+
 }
 
 func NewPokedexEntry(pokemon *structs.Pokemon) (PokedexEntry, error) {
